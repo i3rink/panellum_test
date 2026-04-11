@@ -13,7 +13,7 @@
     width: 100%;
     height: 100%;
     background: #111;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   }
 
   #panorama {
@@ -21,63 +21,157 @@
     height: 100vh;
   }
 
-  /* Custom hotspot styling */
-  .pnlm-hotspot-base.info {
-    background: rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.9);
+  /* ── Hotspot dot ── */
+  .custom-hotspot {
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.15);
+    border: 2px solid rgba(255,255,255,0.9);
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    position: relative;
+    transition: transform 0.2s ease, background 0.2s ease;
     backdrop-filter: blur(4px);
   }
 
-  .pnlm-hotspot-base.info:hover {
-    background: rgba(255, 255, 255, 0.35);
-    border-color: #fff;
-    transform: scale(1.2);
+  .custom-hotspot:hover {
+    background: rgba(255,255,255,0.35);
+    transform: scale(1.15);
   }
 
-  /* Pulse animation on hotspots */
-  .pnlm-hotspot-base.info::after {
+  .custom-hotspot::after {
     content: '';
     position: absolute;
-    top: -6px;
-    left: -6px;
-    right: -6px;
-    bottom: -6px;
+    top: -7px; left: -7px; right: -7px; bottom: -7px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.4);
-    animation: pulse 2s infinite;
+    border: 2px solid rgba(255,255,255,0.35);
+    animation: pulse 2.2s infinite;
+    pointer-events: none;
   }
 
   @keyframes pulse {
-    0% { transform: scale(1); opacity: 0.8; }
-    70% { transform: scale(1.4); opacity: 0; }
-    100% { transform: scale(1.4); opacity: 0; }
+    0%   { transform: scale(1);   opacity: 0.8; }
+    70%  { transform: scale(1.5); opacity: 0;   }
+    100% { transform: scale(1.5); opacity: 0;   }
   }
 
-  /* Tooltip styling */
-  .pnlm-tooltip span {
-    background: rgba(10, 10, 10, 0.88);
+  /* ── Popup card ── */
+  .hs-popup {
+    position: fixed;
+    z-index: 9999;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    width: 260px;
+    overflow: hidden;
+    display: none;
+    animation: popIn 0.18s ease;
+  }
+
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.92) translateY(6px); }
+    to   { opacity: 1; transform: scale(1)    translateY(0);   }
+  }
+
+  .hs-popup.visible { display: block; }
+
+  .hs-popup-header {
+    background: #1a1a2e;
     color: #fff;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 7px 14px;
-    border-radius: 4px;
-    border: 1px solid rgba(255,255,255,0.12);
-    white-space: nowrap;
+    padding: 12px 14px 10px;
+    position: relative;
+  }
+
+  .hs-popup-header h3 {
+    font-size: 14px;
+    font-weight: 600;
     letter-spacing: 0.02em;
-    backdrop-filter: blur(8px);
+    padding-right: 20px;
+    margin-bottom: 2px;
   }
 
-  .pnlm-tooltip span:after {
-    border-top-color: rgba(10, 10, 10, 0.88);
+  .hs-tag {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
 
-  /* Hide default Pannellum branding */
+  .hs-close {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .hs-close:hover { color: #fff; }
+
+  .hs-popup-body {
+    padding: 12px 14px;
+  }
+
+  .hs-desc {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.55;
+    margin-bottom: 4px;
+  }
+
+  .hs-popup-footer {
+    padding: 0 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .hs-btn-primary {
+    display: block;
+    width: 100%;
+    background: #1a1a2e;
+    color: #fff;
+    text-align: center;
+    padding: 9px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: background 0.15s;
+  }
+
+  .hs-btn-primary:hover { background: #2d2d4e; }
+
+  .hs-btn-secondary {
+    display: block;
+    width: 100%;
+    background: transparent;
+    color: #1a1a2e;
+    text-align: center;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    border: 1px solid #ddd;
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .hs-btn-secondary:hover { border-color: #1a1a2e; background: #f5f5f5; }
+
+  #hs-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+  }
+
+  #hs-overlay.visible { display: block; }
+
   .pnlm-about-msg { display: none !important; }
 </style>
 </head>
@@ -85,7 +179,115 @@
 
 <div id="panorama"></div>
 
+<div id="hs-overlay"></div>
+<div class="hs-popup" id="hs-popup">
+  <div class="hs-popup-header">
+    <div class="hs-tag" id="hs-tag">Feature</div>
+    <h3 id="hs-title">Title</h3>
+    <button class="hs-close" onclick="closePopup()">&#x2715;</button>
+  </div>
+  <div class="hs-popup-body">
+    <p class="hs-desc" id="hs-desc"></p>
+  </div>
+  <div class="hs-popup-footer" id="hs-footer"></div>
+</div>
+
 <script>
+  const hotspotData = {
+    hs_1: {
+      tag: 'Workspace',
+      title: "Neil's Desk",
+      desc: 'This is where the magic happens.',
+      links: [
+        { label: 'Visit Digital Marketing Scotland', url: 'https://www.digitalmarketingscotland.co.uk', primary: true }
+      ]
+    },
+    hs_2: {
+      tag: 'Workspace',
+      title: "Colin's Desk",
+      desc: 'This is also where the magic happens.',
+      links: [
+        { label: 'Visit Digital Marketing Scotland', url: 'https://www.digitalmarketingscotland.co.uk', primary: true }
+      ]
+    },
+    hs_3: {
+      tag: 'Facilities',
+      title: 'The Executive Washroom',
+      desc: 'No magic here.',
+      links: [
+        { label: 'Visit Digital Marketing Scotland', url: 'https://www.digitalmarketingscotland.co.uk', primary: true }
+      ]
+    },
+    hs_4: {
+      tag: 'Refreshments',
+      title: 'Snack Hamper',
+      desc: 'Plenty of magic in here.',
+      links: [
+        { label: 'Visit Digital Marketing Scotland', url: 'https://www.digitalmarketingscotland.co.uk', primary: true }
+      ]
+    },
+    hs_5: {
+      tag: 'Equipment',
+      title: 'Speaker',
+      desc: 'Audio magic from here 24/7.',
+      links: [
+        { label: 'Visit Digital Marketing Scotland', url: 'https://www.digitalmarketingscotland.co.uk', primary: true }
+      ]
+    }
+  };
+
+  function openPopup(id, el) {
+    const data = hotspotData[id];
+    if (!data) return;
+
+    document.getElementById('hs-tag').textContent   = data.tag;
+    document.getElementById('hs-title').textContent = data.title;
+    document.getElementById('hs-desc').textContent  = data.desc;
+
+    const footer = document.getElementById('hs-footer');
+    footer.innerHTML = '';
+    (data.links || []).forEach(function(link) {
+      const a = document.createElement('a');
+      a.href = link.url;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      a.textContent = link.label;
+      a.className = link.primary ? 'hs-btn-primary' : 'hs-btn-secondary';
+      footer.appendChild(a);
+    });
+
+    const popup = document.getElementById('hs-popup');
+    const rect  = el.getBoundingClientRect();
+    const pw    = 260;
+    const ph    = 200;
+
+    let left = rect.left + rect.width / 2 - pw / 2;
+    let top  = rect.top - ph - 14;
+
+    if (left < 8) left = 8;
+    if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+    if (top < 8) top = rect.bottom + 14;
+
+    popup.style.left = left + 'px';
+    popup.style.top  = top  + 'px';
+    popup.classList.add('visible');
+    document.getElementById('hs-overlay').classList.add('visible');
+  }
+
+  function closePopup() {
+    document.getElementById('hs-popup').classList.remove('visible');
+    document.getElementById('hs-overlay').classList.remove('visible');
+  }
+
+  document.getElementById('hs-overlay').addEventListener('click', closePopup);
+
+  function makeHotspot(el, args) {
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      openPopup(args, el);
+    });
+  }
+
   pannellum.viewer('panorama', {
     default: {
       firstScene: 'scene1',
@@ -99,48 +301,16 @@
         hfov: 100,
         minHfov: 50,
         maxHfov: 120,
-        compass: false,
         hotSpots: [
-          {
-            pitch: -24.46,
-            yaw: -78.51,
-            type: 'info',
-            text: 'Neil\'s Desk',
-            id: 'hs_1'
-          },
-          {
-            pitch: -22,
-            yaw: -24.61,
-            type: 'info',
-            text: 'Hotspot 2',
-            id: 'hs_2'
-          },
-          {
-            pitch: -3.35,
-            yaw: 22.2,
-            type: 'info',
-            text: 'The Executive Washroom',
-            id: 'hs_3'
-          },
-          {
-            pitch: -12.1,
-            yaw: 6.9,
-            type: 'info',
-            text: 'Snack Hamper',
-            id: 'hs_4'
-          },
-          {
-            pitch: -10.26,
-            yaw: -174.25,
-            type: 'info',
-            text: 'Speaker',
-            id: 'hs_5'
-          }
+          { pitch: -24.46, yaw: -78.51,  type: 'custom', cssClass: 'custom-hotspot', createTooltipFunc: makeHotspot, createTooltipArgs: 'hs_1' },
+          { pitch: -22,    yaw: -24.61,  type: 'custom', cssClass: 'custom-hotspot', createTooltipFunc: makeHotspot, createTooltipArgs: 'hs_2' },
+          { pitch: -3.35,  yaw: 22.2,   type: 'custom', cssClass: 'custom-hotspot', createTooltipFunc: makeHotspot, createTooltipArgs: 'hs_3' },
+          { pitch: -12.1,  yaw: 6.9,    type: 'custom', cssClass: 'custom-hotspot', createTooltipFunc: makeHotspot, createTooltipArgs: 'hs_4' },
+          { pitch: -10.26, yaw: -174.25, type: 'custom', cssClass: 'custom-hotspot', createTooltipFunc: makeHotspot, createTooltipArgs: 'hs_5' }
         ]
       }
     }
   });
 </script>
-
 </body>
 </html>
