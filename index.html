@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pannellum Hotspot Builder</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Courier New', monospace;
+    background: #0e0e0e;
+    color: #e0e0e0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: #161616;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: #f0c040;
+    font-weight: normal;
+  }
+
+  header span {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 0.05em;
+  }
+
+  .mode-btn {
+    margin-left: auto;
+    background: #f0c040;
+    color: #0e0e0e;
+    border: none;
+    padding: 6px 14px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-weight: bold;
+  }
+
+  .mode-btn:hover { background: #ffd060; }
+  .mode-btn.active { background: #e05050; color: #fff; }
+
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  #viewer {
+    flex: 1;
+    position: relative;
+    cursor: crosshair;
+  }
+
+  #pannellum-container {
+    width: 100%;
+    height: 100%;
+  }
+
+  .sidebar {
+    width: 300px;
+    background: #131313;
+    border-left: 1px solid #2a2a2a;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .sidebar-section {
+    padding: 16px;
+    border-bottom: 1px solid #1e1e1e;
+  }
+
+  .sidebar-section h2 {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 12px;
+  }
+
+  .instructions {
+    font-size: 11px;
+    line-height: 1.7;
+    color: #888;
+  }
+
+  .instructions strong { color: #f0c040; }
+
+  .hotspot-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+  }
+
+  .hotspot-item {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-left: 3px solid #f0c040;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    position: relative;
+  }
+
+  .hotspot-item .hs-num {
+    font-size: 10px;
+    color: #f0c040;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .hotspot-item input {
+    width: 100%;
+    background: #0e0e0e;
+    border: 1px solid #2a2a2a;
+    color: #e0e0e0;
+    padding: 5px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    margin-bottom: 6px;
+    outline: none;
+  }
+
+  .hotspot-item input:focus { border-color: #f0c040; }
+
+  .hotspot-item .coords {
+    font-size: 10px;
+    color: #555;
+    font-family: 'Courier New', monospace;
+  }
+
+  .hotspot-item .coords span { color: #888; }
+
+  .delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #444;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 2px;
+  }
+
+  .delete-btn:hover { color: #e05050; }
+
+  .output-section {
+    padding: 16px;
+    border-top: 1px solid #2a2a2a;
+    background: #0e0e0e;
+  }
+
+  .output-section h2 {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #555;
+    margin-bottom: 8px;
+  }
+
+  .copy-btn {
+    width: 100%;
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    color: #f0c040;
+    padding: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+
+  .copy-btn:hover { background: #252525; border-color: #f0c040; }
+
+  .copy-btn.success { color: #50c878; border-color: #50c878; }
+
+  .coords-display {
+    font-size: 10px;
+    color: #444;
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  .empty-state {
+    font-size: 11px;
+    color: #3a3a3a;
+    text-align: center;
+    padding: 24px 12px;
+    line-height: 1.8;
+  }
+
+  .mode-indicator {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(240, 192, 64, 0.9);
+    color: #0e0e0e;
+    padding: 4px 10px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: bold;
+    z-index: 100;
+    pointer-events: none;
+    display: none;
+  }
+
+  .mode-indicator.visible { display: block; }
+
+  .count-badge {
+    background: #2a2a2a;
+    color: #f0c040;
+    font-size: 10px;
+    padding: 2px 8px;
+    letter-spacing: 0.1em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Pannellum Hotspot Builder</h1>
+  <span class="count-badge" id="count-badge">0 hotspots</span>
+  <button class="mode-btn" id="place-btn" onclick="togglePlaceMode()">+ Place Hotspot</button>
+</header>
+
+<div class="main">
+  <div id="viewer">
+    <div id="pannellum-container"></div>
+    <div class="mode-indicator" id="mode-indicator">Click to place hotspot</div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <h2>How to use</h2>
+      <div class="instructions">
+        <strong>1.</strong> Click <strong>+ Place Hotspot</strong><br>
+        <strong>2.</strong> Click anywhere on the image<br>
+        <strong>3.</strong> Type a label for the hotspot<br>
+        <strong>4.</strong> Repeat for each hotspot<br>
+        <strong>5.</strong> Copy the config when done
+      </div>
+    </div>
+
+    <div class="hotspot-list" id="hotspot-list">
+      <div class="empty-state" id="empty-state">
+        No hotspots yet.<br>Click <strong style="color:#f0c040">+ Place Hotspot</strong><br>then click on the scene.
+      </div>
+    </div>
+
+    <div class="output-section">
+      <h2>Export config</h2>
+      <button class="copy-btn" id="copy-btn" onclick="copyConfig()">Copy Pannellum Config</button>
+      <div class="coords-display" id="coords-display">Pan the scene to explore</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let hotspots = [];
+  let placingMode = false;
+  let viewer = null;
+
+  // Init Pannellum
+  viewer = pannellum.viewer('pannellum-container', {
+    type: 'equirectangular',
+    panorama: 'Office_4K.jpg',
+    autoLoad: true,
+    showControls: true,
+    mouseZoom: true,
+    hfov: 100,
+    pitch: 0,
+    yaw: 0,
+    hotSpotDebug: false,
+    strings: { loadButtonLabel: 'Load Scene' }
+  });
+
+  // Track current view coords
+  setInterval(() => {
+    if (viewer) {
+      const pitch = viewer.getPitch().toFixed(1);
+      const yaw = viewer.getYaw().toFixed(1);
+      document.getElementById('coords-display').textContent = `Pitch: ${pitch}°  Yaw: ${yaw}°`;
+    }
+  }, 100);
+
+  function togglePlaceMode() {
+    placingMode = !placingMode;
+    const btn = document.getElementById('place-btn');
+    const indicator = document.getElementById('mode-indicator');
+    if (placingMode) {
+      btn.textContent = '✕ Cancel';
+      btn.classList.add('active');
+      indicator.classList.add('visible');
+      document.getElementById('pannellum-container').style.cursor = 'crosshair';
+    } else {
+      btn.textContent = '+ Place Hotspot';
+      btn.classList.remove('active');
+      indicator.classList.remove('visible');
+      document.getElementById('pannellum-container').style.cursor = 'grab';
+    }
+  }
+
+  // Click handler on the viewer container
+  document.getElementById('pannellum-container').addEventListener('click', function(e) {
+    if (!placingMode) return;
+
+    const pitch = viewer.getPitch();
+    const yaw = viewer.getYaw();
+
+    // Use mouseEventToCoords if available, else use current view center
+    let coords;
+    try {
+      coords = viewer.mouseEventToCoords(e);
+    } catch(err) {
+      coords = [pitch, yaw];
+    }
+
+    const id = Date.now();
+    const num = hotspots.length + 1;
+
+    const hs = {
+      id,
+      num,
+      pitch: parseFloat(coords[0].toFixed(2)),
+      yaw: parseFloat(coords[1].toFixed(2)),
+      label: `Hotspot ${num}`,
+      text: `Description for hotspot ${num}`
+    };
+
+    hotspots.push(hs);
+    addHotspotToViewer(hs);
+    renderSidebar();
+    togglePlaceMode();
+  });
+
+  function addHotspotToViewer(hs) {
+    viewer.addHotSpot({
+      id: String(hs.id),
+      pitch: hs.pitch,
+      yaw: hs.yaw,
+      type: 'info',
+      text: hs.label,
+      cssClass: 'custom-hotspot'
+    });
+  }
+
+  function removeHotspot(id) {
+    try { viewer.removeHotSpot(String(id)); } catch(e) {}
+    hotspots = hotspots.filter(h => h.id !== id);
+    // Renumber
+    hotspots.forEach((h, i) => { h.num = i + 1; });
+    renderSidebar();
+  }
+
+  function updateHotspot(id, field, value) {
+    const hs = hotspots.find(h => h.id === id);
+    if (hs) {
+      hs[field] = value;
+      // Update viewer tooltip
+      if (field === 'label') {
+        try {
+          viewer.removeHotSpot(String(id));
+          viewer.addHotSpot({
+            id: String(id),
+            pitch: hs.pitch,
+            yaw: hs.yaw,
+            type: 'info',
+            text: hs.label
+          });
+        } catch(e) {}
+      }
+    }
+  }
+
+  function renderSidebar() {
+    const list = document.getElementById('hotspot-list');
+    const empty = document.getElementById('empty-state');
+    const badge = document.getElementById('count-badge');
+
+    badge.textContent = `${hotspots.length} hotspot${hotspots.length !== 1 ? 's' : ''}`;
+
+    if (hotspots.length === 0) {
+      list.innerHTML = '';
+      list.appendChild(empty);
+      return;
+    }
+
+    list.innerHTML = hotspots.map(hs => `
+      <div class="hotspot-item">
+        <div class="hs-num">Hotspot ${hs.num}</div>
+        <button class="delete-btn" onclick="removeHotspot(${hs.id})">✕</button>
+        <input
+          type="text"
+          value="${hs.label}"
+          placeholder="Label (shown on hover)"
+          oninput="updateHotspot(${hs.id}, 'label', this.value)"
+        />
+        <input
+          type="text"
+          value="${hs.text}"
+          placeholder="Description text"
+          oninput="updateHotspot(${hs.id}, 'text', this.value)"
+        />
+        <div class="coords">
+          Pitch: <span>${hs.pitch}°</span> &nbsp; Yaw: <span>${hs.yaw}°</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function copyConfig() {
+    const config = {
+      default: {
+        firstScene: "scene1",
+        sceneFadeDuration: 1000
+      },
+      scenes: {
+        scene1: {
+          type: "equirectangular",
+          panorama: "Office_4K.jpg",
+          autoLoad: true,
+          hotSpots: hotspots.map(hs => ({
+            pitch: hs.pitch,
+            yaw: hs.yaw,
+            type: "info",
+            text: hs.label,
+            id: `hs_${hs.num}`
+          }))
+        }
+      }
+    };
+
+    const text = JSON.stringify(config, null, 2);
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copy-btn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('success');
+      setTimeout(() => {
+        btn.textContent = 'Copy Pannellum Config';
+        btn.classList.remove('success');
+      }, 2000);
+    });
+  }
+</script>
+</body>
+</html>
