@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Tour</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #111;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  #panorama {
+    width: 100%;
+    height: 100vh;
+  }
+
+  /* Custom hotspot styling */
+  .pnlm-hotspot-base.info {
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .pnlm-hotspot-base.info:hover {
+    background: rgba(255, 255, 255, 0.35);
+    border-color: #fff;
+    transform: scale(1.2);
+  }
+
+  /* Pulse animation on hotspots */
+  .pnlm-hotspot-base.info::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 0.8; }
+    70% { transform: scale(1.4); opacity: 0; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  /* Tooltip styling */
+  .pnlm-tooltip span {
+    background: rgba(10, 10, 10, 0.88);
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.12);
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    backdrop-filter: blur(8px);
+  }
+
+  .pnlm-tooltip span:after {
+    border-top-color: rgba(10, 10, 10, 0.88);
+  }
+
+  /* Hide default Pannellum branding */
+  .pnlm-about-msg { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="panorama"></div>
+
+<script>
+  pannellum.viewer('panorama', {
+    default: {
+      firstScene: 'scene1',
+      sceneFadeDuration: 1000
+    },
+    scenes: {
+      scene1: {
+        type: 'equirectangular',
+        panorama: 'Office_4K.jpg',
+        autoLoad: true,
+        hfov: 100,
+        minHfov: 50,
+        maxHfov: 120,
+        compass: false,
+        hotSpots: [
+          {
+            pitch: -24.46,
+            yaw: -78.51,
+            type: 'info',
+            text: 'Neil\'s Desk',
+            id: 'hs_1'
+          },
+          {
+            pitch: -22,
+            yaw: -24.61,
+            type: 'info',
+            text: 'Hotspot 2',
+            id: 'hs_2'
+          },
+          {
+            pitch: -3.35,
+            yaw: 22.2,
+            type: 'info',
+            text: 'The Executive Washroom',
+            id: 'hs_3'
+          },
+          {
+            pitch: -12.1,
+            yaw: 6.9,
+            type: 'info',
+            text: 'Snack Hamper',
+            id: 'hs_4'
+          },
+          {
+            pitch: -10.26,
+            yaw: -174.25,
+            type: 'info',
+            text: 'Speaker',
+            id: 'hs_5'
+          }
+        ]
+      }
+    }
+  });
+</script>
+
+</body>
+</html>
